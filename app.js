@@ -9,6 +9,8 @@ var mysql = require('mysql2');
 // parse application/json
 app.use(bodyParser.json());
 
+app.use(require('./routes/route_index'));
+
 // creating a connection
 var con = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -48,12 +50,10 @@ con.query('INSERT INTO `blog`.`usermodel` (`username`, `email`, `password`, `bio
   });
 */
 
-app.get("/", function(req,res){
-	res.send("Hello World");
-});
+
 
 //GET ALL USERS DATA
-app.get("/api/users", function(req,res){
+app.get("/api/userss", function(req,res){
     let sql = 'SELECT * FROM usermodel';
     let query = con.query(sql, function(err, results){
         if(err) throw err;
@@ -99,6 +99,6 @@ app.put('/api/users/:username',(req, res) => {
     });
   });
 
-app.listen(3000, function(){
-	console.log("Server is running on port 3000.");
+const server = app.listen(process.env.PORT || 3000, function(){
+	console.log("Server is running on port " + server.address().port);
 });
