@@ -12,6 +12,7 @@ app.use(bodyParser.json());
 app.use(require('./routes/route_index'));
 
 // creating a connection
+
 var con = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -53,52 +54,59 @@ con.query('INSERT INTO `blog`.`usermodel` (`username`, `email`, `password`, `bio
 
 
 //GET ALL USERS DATA
-app.get("/api/userss", function(req,res){
-    let sql = 'SELECT * FROM usermodel';
-    let query = con.query(sql, function(err, results){
-        if(err) throw err;
-        res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-    });
+app.get("/users", function(req,res){
+  let sql = 'SELECT * FROM usermodel';
+  let query = con.query(sql, function(err, results){
+      if(err) throw err;
+      res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+  });
 });
 
 //GET USER BY USERNAME
 
-app.get('/api/users/:username',(req, res) => {
-    let sql = "SELECT * FROM usermodel WHERE username="+" '"+req.params.username + "' ";
-    console.log(sql);
-    let query = con.query(sql, (err, results) => {
-      if(err) throw err;
-      res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-    });
+app.get('/users/:username',(req, res) => {
+  let sql = "SELECT * FROM usermodel WHERE username="+" '"+req.params.username + "' ";
+  console.log(sql);
+  let query = con.query(sql, (err, results) => {
+    if(err) throw err;
+    res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
   });
+});
 
 // CREATE USER & ADD TO DATABASE
 // REGISTRATION
 
-app.post("/api/users", function(req,res){
-    let data = {username : req.body.username,
-    email : req.body.email,
-    password: req.body.password,
-    bio : req.body.bio
-    };
-    let sql = "INSERT INTO usermodel SET ?";
-    let query = con.query(sql, data,(err, results) => {
-        if(err) throw err;
-        res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-      });
+app.post("/users", function(req,res){
+  let data = {username : req.body.username,
+  email : req.body.email,
+  password: req.body.password,
+  bio : req.body.bio
+  };
+  let sql = "INSERT INTO usermodel SET ?";
+  let query = con.query(sql, data,(err, results) => {
+      if(err) throw err;
+      res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
+    });
 })
 
 //UPDATE USER
 
-app.put('/api/users/:username',(req, res) => {
-    let sql = "UPDATE usermodel SET password='"+req.body.password+"', email='"+req.body.email+"' WHERE username="+ " '"+ req.params.username + "' ";
-    console.log(sql);
-    let query = con.query(sql, (err, results) => {
-      if(err) throw err;
-      res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-    });
+app.put('/users/:username',(req, res) => {
+  let sql = "UPDATE usermodel SET password='"+req.body.password+"', email='"+req.body.email+"' WHERE username="+ " '"+ req.params.username + "' ";
+  console.log(sql);
+  let query = con.query(sql, (err, results) => {
+    if(err) throw err;
+    res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
   });
+});
+
+
+app.get("/", function(req,res){
+	res.send("Hello World");
+});
 
 const server = app.listen(process.env.PORT || 3000, function(){
 	console.log("Server is running on port " + server.address().port);
 });
+
+module.exports = con;
