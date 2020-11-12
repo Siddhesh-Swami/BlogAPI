@@ -5,26 +5,31 @@ const express = require("express");
 const bodyParser = require('body-parser');
 const app = express();
 var mysql = require('mysql2');
+const {db} = require("./models/index");
 
+var server;
 // parse application/json
-app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({extended:true}))
+// app.use(bodyParser.json());
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 app.use(require('./routes/route_index'));
 
 // creating a connection
 
-var con = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASS,
-  database: process.env.DB_NAME
-});
+// var con = mysql.createConnection({
+//   host: process.env.DB_HOST,
+//   user: process.env.DB_USER,
+//   password: process.env.DB_PASS,
+//   database: process.env.DB_NAME
+// });
 
 //connect to MYSQL DB
-con.connect(function(err) {
-  if (err) throw err;
-  console.log("Connected to the Database Successfully!");
-});
+// con.connect(function(err) {
+//   if (err) throw err;
+//   console.log("Connected to the Database Successfully!");
+// });
 
 // select query
 
@@ -52,61 +57,34 @@ con.query('INSERT INTO `blog`.`usermodel` (`username`, `email`, `password`, `bio
 */
 
 
+/*
 
-//GET ALL USERS DATA
-app.get("/users", function(req,res){
-  let sql = 'SELECT * FROM usermodel';
-  let query = con.query(sql, function(err, results){
-      if(err) throw err;
-      res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  });
-});
+*/
 
-//GET USER BY USERNAME
 
-app.get('/users/:username',(req, res) => {
-  let sql = "SELECT * FROM usermodel WHERE username="+" '"+req.params.username + "' ";
-  console.log(sql);
-  let query = con.query(sql, (err, results) => {
-    if(err) throw err;
-    res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  });
-});
+try {
+  db.authenticate();
+  console.log('Connection has been established successfully.');
+} catch (error) {
+  console.error('Unable to connect to the database:', error);
+}
 
-// CREATE USER & ADD TO DATABASE
-// REGISTRATION
 
-app.post("/users", function(req,res){
-  let data = {username : req.body.username,
-  email : req.body.email,
-  password: req.body.password,
-  bio : req.body.bio
-  };
-  let sql = "INSERT INTO usermodel SET ?";
-  let query = con.query(sql, data,(err, results) => {
-      if(err) throw err;
-      res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-    });
-})
-
-//UPDATE USER
-
-app.put('/users/:username',(req, res) => {
-  let sql = "UPDATE usermodel SET password='"+req.body.password+"', email='"+req.body.email+"' WHERE username="+ " '"+ req.params.username + "' ";
-  console.log(sql);
-  let query = con.query(sql, (err, results) => {
-    if(err) throw err;
-    res.send(JSON.stringify({"status": 200, "error": null, "response": results}));
-  });
-});
-
+db.sync()
+  .then(() => {
+      console.log("Tables created");
+      server = app.listen(process.env.PORT || 3000, function(){
+      console.log("Server is running on port " + server.address().port);
+      });
+  })
+  .catch( function (err) {
+    console.error(err)
+  })
 
 app.get("/", function(req,res){
 	res.send("Hello World");
 });
 
-const server = app.listen(process.env.PORT || 3000, function(){
-	console.log("Server is running on port " + server.address().port);
-});
+  
 
-module.exports = con;
+// module.exports = con;
