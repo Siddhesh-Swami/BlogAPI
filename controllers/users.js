@@ -46,6 +46,16 @@ async function verifyUser(options) {
     return user
   }
 
+async function getUser(optUsername){
+    const user = await Users.findOne({
+        where : {
+            username : optUsername
+        }
+    })
+
+    return user
+}  
+
 module.exports = {
-    createUser, verifyUser
+    createUser, verifyUser ,getUser
   }

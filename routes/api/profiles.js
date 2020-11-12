@@ -1,17 +1,16 @@
 var router = require('express').Router();
 
+const {getUser} = require("../../controllers/users")
+
 
 // Get a profile
-router.get('/profiles/:username', (req, res) => {
+//Partially working
+//  TODO hide password and show following
+
+router.get('/profiles/:username', async (req, res) => {
     //TODO 
-    res.send({
-      "profile": {
-        "username": req.params.username,
-        "bio": "I work at statefarm",
-        "image": "https://static.productionready.io/images/smiley-cyrus.jpg",
-        "following": false
-      }
-    })
+    const profile = await getUser(req.params.username);
+    res.send(profile);
   })
 
 router.post('/profiles/:username/follow'), (req,res) => {
