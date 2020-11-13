@@ -1,9 +1,15 @@
+// dotenv to hide private apikeys & passwords
+// require('dotenv').config()
+const path = require('path');
+require('dotenv').config({
+  path: path.resolve('config.env'),
+});
 const Sequelize = require('sequelize')
 
 const db = new Sequelize({
-  database: 'blogDB',
-  username: 'root',
-  password: 'Siddhesh2020',
+  database: process.env.DB_NAME,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASS,
   dialect: 'mysql'
 })
 
