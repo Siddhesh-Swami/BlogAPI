@@ -65,6 +65,37 @@ async function verifyUser(options) {
     return userJson
 }
 
+async function updateUser(options){
+    
+    // const user = await Users.findOne({
+    //     attributes: ['email', 'username', 'bio', 'image', 'password'],
+    //     where: {
+    //         email: options.email
+    //   }
+    // })
+
+    // if (!user) {
+    //     throw new Error('No user with given email address')
+    // }
+
+    const updatedUser = await Users.update(options, {
+        where: {
+        email : options.email 
+        }
+    });
+
+    const user_updated = 
+        await Users.findOne({
+        attributes: ['email', 'username', 'bio', 'image'],
+        where: {
+            email:  options.email 
+        }
+    })
+    
+    return user_updated;  
+
+}
+
 async function getUser(optUsername){
     const user = await Users.findOne({
         where : {
@@ -76,5 +107,5 @@ async function getUser(optUsername){
 }  
 
 module.exports = {
-    createUser, verifyUser ,getUser
+    createUser, verifyUser ,getUser , updateUser
   }

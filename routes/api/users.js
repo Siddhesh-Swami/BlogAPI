@@ -1,6 +1,6 @@
 var router = require('express').Router();
 var mysql = require('mysql2');
-const {createUser,verifyUser} = require('../../controllers/users')
+const {createUser,verifyUser,updateUser} = require('../../controllers/users')
 const {authenticateToken} = require("../../middlewares/auth")
 
 // var con = require('../../app');
@@ -38,7 +38,37 @@ router.post('/users/login', async (req, res) => {
   }
 })
 
-//TODO update user on Auth
+
+router.put('/user',authenticateToken, async (req,res)=> {
+
+  if(req.user)
+  {
+    try{
+      const updatedUser = await updateUser(req.body.user)
+      if(updatedUser != null)
+      {
+        res.send(
+          {status:"successfully updated details",updatedUser}
+          )
+      }
+      else{
+        res.send({
+          errors: {
+            body: [ "User with this email id does not exist in Database" ]
+          }
+        })
+      }
+      
+    }catch(err){
+      res.status(403).send({
+        errors: {
+          body: [ err.message ]
+        }
+      })
+    }
+  }
+  
+})
 
 
 
