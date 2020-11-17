@@ -1,4 +1,5 @@
 const {Users} = require('../models');
+const {createJwt} = require('../middlewares/auth');
 
 async function createUser(options){
     if(!options.username){
@@ -19,7 +20,18 @@ async function createUser(options){
         throw new Error('Error creating user')
       }
     
-      return user
+      const createdUser = await Users.findOne({
+        attributes: ['email', 'username', 'bio', 'image'],
+        where: {
+          username: user.username
+        }
+      })
+      const token = await createJwt(createdUser.get())
+    
+      return {
+        ...createdUser.get(),
+        token
+      }
 }
 
 async function verifyUser(options) {
@@ -31,8 +43,9 @@ async function verifyUser(options) {
     }
   
     const user = await Users.findOne({
-      where: {
-        email: options.email
+        attributes: ['email', 'username', 'bio', 'image', 'password'],
+        where: {
+            email: options.email
       }
     })
     if (!user) {
@@ -43,8 +56,14 @@ async function verifyUser(options) {
       throw new Error('Password does not match')
     }
   
-    return user
-  }
+    const token = await createJwt(user.get())
+    const userJson = {
+        ...user.get(),
+        token
+    }
+    delete userJson.password
+    return userJson
+}
 
 async function getUser(optUsername){
     const user = await Users.findOne({

@@ -1,17 +1,15 @@
 var router = require('express').Router();
 var mysql = require('mysql2');
 const {createUser,verifyUser} = require('../../controllers/users')
+const {authenticateToken} = require("../../middlewares/auth")
 
+// var con = require('../../app');
 
-var con = require('../../app');
-
-router.get("/test", function(req,res){
-  res.send("test successful");
-})
-
-router.get('/user', (req, res) => {
-  // TODO: Send current user using JWT
-  
+router.get('/user',authenticateToken, (req, res) => {
+  // TODO: remove password
+  if(req.user){
+    res.send(req.user)
+  }
 })
 
 //Working
