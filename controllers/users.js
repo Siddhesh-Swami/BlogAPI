@@ -96,18 +96,6 @@ async function updateUser(options){
 
 }
 
-async function DisplayProfile(optUsername){
-    const user = await Users.findOne({
-        attributes: ['email', 'username', 'bio', 'image'],
-        where : {
-            username : optUsername
-        }
-        
-    })
-
-    return user
-}  
-
 module.exports = {
-    createUser, verifyUser ,DisplayProfile , updateUser
+    createUser, verifyUser , updateUser
   }

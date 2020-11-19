@@ -1,19 +1,22 @@
 var router = require('express').Router();
 
-const {DisplayProfile} = require("../../controllers/users")
+const {authenticateToken} = require("../../middlewares/auth")
+const {DisplayProfile} = require("../../controllers/profiles")
 
 
 // Get a profile
 router.get('/profiles/:username', async (req, res) => {
-    
-    const profile = await DisplayProfile(req.params.username);
-    res.send(profile);
+    try {
+        const profile = await DisplayProfile(req.params.username);
+        res.send(profile);
+      } catch (err) {
+        res.status(403).send({
+          errors: {
+            body: [ err.message ]
+          }
+        })
+      }
   })
-
-
-router.get('/profiles/myprofile'), async(req,res) => {
-
-}
 
 router.post('/profiles/:username/follow'), (req,res) => {
     //TODO

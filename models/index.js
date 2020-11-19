@@ -55,6 +55,16 @@ const Articles = db.define('article', {
   "body": Sequelize.STRING,
 })
 
+const FollowTables = db.define('followtable',{
+  "Follower": {
+      type: Sequelize.STRING(50),
+  primaryKey: true
+  },
+  "Following":{
+      type: Sequelize.STRING(50)
+  }
+})
+/*
 const Comments = db.define('comment', {
   body: {
     type: Sequelize.STRING,
@@ -68,23 +78,31 @@ const Tags = db.define('tag', {
     primaryKey: true
   }
 })
+*/
 
-Comments.belongsTo(Articles)
-Articles.hasMany(Comments)
+// Comments.belongsTo(Articles)
+// Articles.hasMany(Comments)
 
-Comments.belongsTo(Users, { as: 'author' })
+// Comments.belongsTo(Users, { as: 'author' })
 
 Articles.belongsTo(Users, { as: 'author' })
 Users.hasMany(Articles)
 
+FollowTables.belongsTo(Users, {foreignKey:'Follower'});
+Users.hasMany(FollowTables,{foreignKey:'Follower'});
+
+FollowTables.create({Follower:"sid", Following:"sid2"});
+
+
+/*
 Articles.belongsToMany(Users, { through: 'favourites' })
 Users.belongsToMany(Articles, { through: 'favourites' })
 
 Articles.belongsToMany(Tags, { through: 'article_tags' })
 Tags.belongsToMany(Articles, { through: 'article_tags' })
-
+*/
 module.exports = {
   db,
-  Users, Articles, Comments, Tags
+  Users, Articles, FollowTables
 }
 
