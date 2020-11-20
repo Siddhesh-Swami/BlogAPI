@@ -48,12 +48,44 @@ async function getArticle(slug){
           slug : slug
       },
       include: [{model:Users, as:'author',attributes:['username','bio','image'] }]
- 
   })
  
   console.log(fetchedArticle)
   return fetchedArticle
+} 
+
+async function deleteArticle(slug, username){
+
+  const user = await Users.findOne({
+    where : {
+      username : username 
+    }
+  })
+
+  const article = await Articles.findOne({
+    where : {
+      slug : slug
+    }
+  })
+
+  if(!article)
+  {throw new Error('No article found with the following name')};
+
+  console.log(article);
+  console.log(user);
+  
+  if(user.username != article.userUsername)
+  {throw new Error('Cannot delete SomeOne Else\'s Article \n Please Provide Slug of your article only')};
+
+  const deletedArticle = await Articles.destroy({
+      where : {
+          slug : slug
+      }
+  })
+
+  if(deletedArticle == 0) return {'message':'No Article Deleted'};
+  else return {'message':'Article has been Deleted'};
 
 } 
 
-module.exports = {createArticle, getArticle}
+module.exports = {createArticle, getArticle , deleteArticle}

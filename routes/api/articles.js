@@ -1,6 +1,6 @@
 var router = require('express').Router();
 const {authenticateToken} = require("../../middlewares/auth")
-const {createArticle,getArticle}=require('../../controllers/articles')
+const {createArticle,getArticle, deleteArticle}=require('../../controllers/articles')
 
 //To Create an Article
 router.post('/articles', authenticateToken , async function(req,res){
@@ -32,6 +32,24 @@ router.get('/articles/:slug' , async function(req,res){
         body: [ err.message ]
       }
     })
+  }
+})
+
+//To delete an Article
+router.delete('/articles/:slug' , authenticateToken , async function(req,res){
+  if(req.user)
+  {
+    try {
+      const deletedArticle = await deleteArticle(req.params.slug,req.user.username);
+      res.send(deletedArticle);
+    } catch (err) {
+      res.status(403).send({
+        errors: {
+          body: [ err.message ]
+        }
+      })
+    }
+    
   }
 })
 
