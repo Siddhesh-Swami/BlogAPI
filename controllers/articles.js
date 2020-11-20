@@ -56,12 +56,14 @@ async function getArticle(slug){
 
 async function deleteArticle(slug, username){
 
+  // get the logged in user
   const user = await Users.findOne({
     where : {
       username : username 
     }
   })
 
+  // to get the article via slug 
   const article = await Articles.findOne({
     where : {
       slug : slug
@@ -73,7 +75,7 @@ async function deleteArticle(slug, username){
 
   console.log(article);
   console.log(user);
-  
+  //If the user name of logged in user and article username does not match, throw an error
   if(user.username != article.userUsername)
   {throw new Error('Cannot delete SomeOne Else\'s Article \n Please Provide Slug of your article only')};
 
@@ -86,6 +88,40 @@ async function deleteArticle(slug, username){
   if(deletedArticle == 0) return {'message':'No Article Deleted'};
   else return {'message':'Article has been Deleted'};
 
-} 
+}
 
-module.exports = {createArticle, getArticle , deleteArticle}
+async function updateArticle(slug,username,articleOpts){
+  // get the logged in user
+  const user = await Users.findOne({
+    where : {
+      username : username 
+    }
+  })
+
+  // to get the article via slug 
+  const article = await Articles.findOne({
+    where : {
+      slug : slug
+    }
+  })
+
+  if(!article)
+  {throw new Error('No article found with the following name')};
+
+  if(user.username != article.userUsername)
+  {throw new Error('Cannot update SomeOne Else\'s Article \n Please Provide Slug of your article only')};
+
+  const updatedArticle = await Articles.update(articleOpts,{
+    where : {
+      slug : slug
+    }
+  })
+
+  if(updatedArticle ==1)
+  {
+    return getArticle(slug);
+  }
+  
+}
+
+module.exports = {createArticle, getArticle , deleteArticle, updateArticle}
