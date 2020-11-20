@@ -91,7 +91,7 @@ Users.hasMany(Articles)
 FollowTables.belongsTo(Users, {foreignKey:'Follower'});
 Users.hasMany(FollowTables,{foreignKey:'Follower'});
 
-FollowTables.create({Follower:"sid", Following:"sid2"});
+// FollowTables.create({Follower:"sid", Following:"sid2"});
 
 
 /*

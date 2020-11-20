@@ -18,6 +18,22 @@ router.get('/profiles/:username', async (req, res) => {
       }
   })
 
+router.get('/profile/myprofile', authenticateToken, async (req,res) => {
+    if(req.user)
+    {
+        try {
+            const profile = await DisplayProfile(req.user.username);
+            res.send(profile);
+          } catch (err) {
+            res.status(403).send({
+              errors: {
+                body: [ err.message ]
+              }
+            })
+          }
+    }
+})
+
 router.post('/profiles/:username/follow'), (req,res) => {
     //TODO
 }
