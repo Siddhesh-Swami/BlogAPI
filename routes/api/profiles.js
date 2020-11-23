@@ -1,7 +1,7 @@
 var router = require('express').Router();
 
 const {authenticateToken} = require("../../middlewares/auth")
-const {DisplayProfile} = require("../../controllers/profiles")
+const {DisplayProfile, FollowProfile,UnfollowProfile} = require("../../controllers/profiles")
 
 
 // Get a profile
@@ -34,13 +34,41 @@ router.get('/profile/myprofile', authenticateToken, async (req,res) => {
     }
 })
 
-router.post('/profiles/:username/follow'), (req,res) => {
-    //TODO
-}
+router.post('/profiles/:username/follow',authenticateToken,async (req,res) => {
+    
+    if(req.user)
+    {
+        try {
+            const followedProfile = await FollowProfile(req.user.username,req.params.username);
+            res.send(followedProfile);
+          } catch (err) {
+            res.status(403).send({
+              errors: {
+                body: [ err.message ]
+              }
+            })
+          }
+    }
+})
 
-router.delete('/profiles/:username/follow'), (req,res) => {
+router.delete('/profiles/:username/follow', authenticateToken, async (req,res) => {
     //TODO
-}
+    if(req.user)
+    {
+        try {
+            const unfollowedProfile = await UnfollowProfile(req.user.username,req.params.username);
+            res.send(unfollowedProfile);
+          } catch (err) {
+            res.status(403).send({
+              errors: {
+                body: [ err.message ]
+              }
+            })
+          }
+    }
+    
+
+})
   
  module.exports = router; 
   
