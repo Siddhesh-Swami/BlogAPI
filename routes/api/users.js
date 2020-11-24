@@ -1,25 +1,22 @@
 var router = require('express').Router();
 var mysql = require('mysql2');
-const {createUser,verifyUser,updateUser} = require('../../controllers/users')
+const {createUser,verifyUser,updateUser,getUser} = require('../../controllers/users')
 const {authenticateToken} = require("../../middlewares/auth")
 
 // var con = require('../../app');
 
-router.get('/user',authenticateToken, (req, res) => {
-  // TODO: remove password
+//Get Current User
+router.get('/user',authenticateToken,async (req, res) => {
   if(req.user){
-    res.send(req.user)
+    const User = await getUser(req.user.username);
+    res.send(User)
   }
 })
 
 //Working
 //REGISTRATION of USER
 router.post('/users', async (req, res) => {
-  const createdUser = await createUser({
-    username: req.body.username,
-    email: req.body.email,
-    password: req.body.password
-  })
+  const createdUser = await createUser(req.body);
   res.send(createdUser)
 })
 

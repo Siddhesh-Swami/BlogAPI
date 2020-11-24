@@ -52,7 +52,6 @@ router.post('/profiles/:username/follow',authenticateToken,async (req,res) => {
 })
 
 router.delete('/profiles/:username/follow', authenticateToken, async (req,res) => {
-    //TODO
     if(req.user)
     {
         try {

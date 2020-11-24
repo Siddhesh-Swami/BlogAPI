@@ -1,6 +1,6 @@
 var router = require('express').Router();
 const {authenticateToken} = require("../../middlewares/auth")
-const {createArticle,getArticle, deleteArticle, updateArticle}=require('../../controllers/articles')
+const {createArticle,getArticle, deleteArticle, updateArticle,getAllArticles,feedArticles}=require('../../controllers/articles')
 
 //To Create an Article
 router.post('/articles', authenticateToken , async function(req,res){
@@ -20,6 +20,28 @@ router.post('/articles', authenticateToken , async function(req,res){
     }
        
 })
+
+//To get Feed
+router.get('/articles/feed',authenticateToken ,async (req,res) =>{
+ 
+  const limit = req.query.limit;
+  const offset = req.query.offset;
+
+  if(req.user){
+    try {
+      const articles = await feedArticles(req.user.username,limit,offset);
+      res.send(articles);
+    } catch (err) {
+      res.status(403).send({
+        errors: {
+          body: [ err.message ]
+        }
+      })
+    }
+  }
+  
+})
+
 
 //To get an Article
 router.get('/articles/:slug' , async function(req,res){
@@ -67,5 +89,28 @@ router.put('/articles/:slug' , authenticateToken , async function(req,res){
     } 
   }
 })
+
+//Get all articles
+router.get('/articles',async (req,res) =>{
+  const author = req.query.author;
+  const limit = req.query.limit;
+  const offset = req.query.offset;
+
+  console.log(req.query);
+  try {
+    const articles = await getAllArticles(author,limit,offset);
+    res.send(articles);
+  } catch (err) {
+    res.status(403).send({
+      errors: {
+        body: [ err.message ]
+      }
+    })
+  }
+
+
+})
+
+
 
 module.exports = router;

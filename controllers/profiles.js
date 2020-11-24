@@ -1,6 +1,7 @@
 const {Users} = require('../models');
 const {FollowTables} = require('../models');
 const Sequelize = require('sequelize')
+const { Op } = require("sequelize");
 
 
 async function DisplayProfile(optUsername){
@@ -32,15 +33,53 @@ async function FollowProfile(follower, toFollow){
 
     if(!user){throw new Error('No user with given username')}
 
+    // const userss = await FollowTables.findOne({
+    //     where :
+    // })
+    // const output = Sequelize.fn('FIND_IN_SET',toFollow,Sequelize.fn('REPLACE',Sequelize.col('Following'),',',' '));
+    // // REPLACE(Sequelize.col('Following'),',',' '))
+    // console.log(output);
+
+    const testUser = await FollowTables.findOne({
+        where: {Follower : follower}        
+    })
+
+    if(!testUser)
+    {
+        await FollowTables.create({
+                Follower : follower,
+                Following : ''
+        })
+    }
+
+    const alreadyFollowed =await FollowTables.findOne({
+        where: {
+            [Op.and]: [
+              Sequelize.where( Sequelize.fn('FIND_IN_SET',toFollow,Sequelize.col('Following')),'>',0) ,
+              { Follower: follower }
+            ]
+          }     
+    })
+
+    if(alreadyFollowed){throw new Error('This User is already Followed by you.')}
+    console.log(alreadyFollowed)
+
+
     const followedProfile = await FollowTables.update(
-        {Following: Sequelize.fn('CONCAT',Sequelize.col('Following'),' ',toFollow)},
+        {Following: Sequelize.fn('CONCAT',Sequelize.col('Following'),',',toFollow)},
         { where: {Follower : follower}}
     )
 
     console.log(followedProfile);
 
     if(followedProfile == 1) {
-        return  {'message':'User followed'}
+        return  {
+            'status':{
+                'follwer_username':follower,
+                'followed_username': toFollow
+            },
+            'message':'User followed'
+        }
     }else {return  {'message':'User not followed'}}
 
 }
@@ -56,16 +95,37 @@ async function UnfollowProfile(follower, toUnfollow){
 
     if(!user){throw new Error('No user with given username')}
 
-    const unfollowedProfile = await FollowTables.update(
-        {Following: Sequelize.fn('REPLACE',Sequelize.col('Following'),toUnfollow,'')},
-        { where: {Follower : follower}}
-    )
+    const alreadyUnfollowed =await FollowTables.findOne({
+        where: {
+            [Op.and]: [
+              Sequelize.where( Sequelize.fn('FIND_IN_SET',toUnfollow,Sequelize.col('Following')),'>',0) ,
+              { Follower: follower }
+            ]
+          }     
+    })
+    console.log(alreadyUnfollowed)
+    if(alreadyUnfollowed){
 
-    console.log(unfollowedProfile);
+        const unfollowedProfile = await FollowTables.update(
+            {Following: Sequelize.fn('REPLACE',Sequelize.col('Following'),','+toUnfollow,'')},
+            { where: {Follower : follower}}
+        )
+    
+        console.log(unfollowedProfile);
+    
+        if(unfollowedProfile == 1) {
+            return  {
+                'status':{
+                    'follwer_username':follower,
+                    'unfollowed_username': toUnfollow
+                },
+                'message':'User Unfollowed'
+            }
+        }else {return  {'message':'User not unfollowed'}}
 
-    if(unfollowedProfile == 1) {
-        return  {'message':'User unfollowed'}
-    }else {return  {'message':'User not unfollowed'}}
+    }else{
+        throw new Error('This User is already unFollowed by you.')
+        }
 
 }
 

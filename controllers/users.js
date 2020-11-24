@@ -1,6 +1,18 @@
 const {Users} = require('../models');
 const {createJwt} = require('../middlewares/auth');
 
+async function getUser(optUsername){
+
+  const User = await Users.findOne({
+    attributes: ['email', 'username', 'bio', 'image','createdAt'],
+    where: {
+        username : optUsername
+    }    
+    })
+
+    return User;
+}
+
 async function createUser(options){
     if(!options.username){
         throw new Error('username not provided')
@@ -12,14 +24,19 @@ async function createUser(options){
         throw new Error('password not provided')
       }
 
-      const user =await Users.create({
-        ...options
-      })
-    
-      if (!user) {
-        throw new Error('Error creating user')
+      try{
+        var user =await Users.create({
+          ...options
+        })
+
+        if (!user) {
+          throw new Error('Error creating user')
+        }
       }
-    
+      catch(err){
+        return {'error':err.name,'message':err.errors[0].message};
+      }
+      
       const createdUser = await Users.findOne({
         attributes: ['email', 'username', 'bio', 'image'],
         where: {
@@ -97,5 +114,5 @@ async function updateUser(options){
 }
 
 module.exports = {
-    createUser, verifyUser , updateUser
+    createUser, verifyUser , updateUser, getUser
   }
