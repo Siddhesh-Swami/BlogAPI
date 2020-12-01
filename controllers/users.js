@@ -34,6 +34,7 @@ async function createUser(options){
         }
       }
       catch(err){
+        //doubt security
         return {'error':err.name,'message':err.errors[0].message};
       }
       
@@ -43,12 +44,15 @@ async function createUser(options){
           username: user.username
         }
       })
+
+      //.get() to convert it into json
       const token = await createJwt(createdUser.get())
     
       return {
         ...createdUser.get(),
         token
       }
+      // returns user + token
 }
 
 async function verifyUser(options) {

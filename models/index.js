@@ -6,13 +6,16 @@ require('dotenv').config({
 });
 const Sequelize = require('sequelize')
 
+//remove OR condition of Host while building docker container
 const db = new Sequelize({
+  host : 'host.docker.internal'| process.env.DB_HOST,
   database: process.env.DB_NAME,
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   dialect: 'mysql'
 })
 
+//Creating Models in Sequelize 
 const Users = db.define('user', {
   email: {
     type: Sequelize.STRING,

@@ -22,6 +22,7 @@ async function DisplayProfile(optUsername){
     return follow
 }  
 
+//follower is the person that will follow another user
 async function FollowProfile(follower, toFollow){
 
     const user = await Users.findOne({
@@ -44,6 +45,7 @@ async function FollowProfile(follower, toFollow){
         where: {Follower : follower}        
     })
 
+    //To create new row if FollowTables does not have follower in first column
     if(!testUser)
     {
         await FollowTables.create({
@@ -52,6 +54,7 @@ async function FollowProfile(follower, toFollow){
         })
     }
 
+    // To check if the user is already followed
     const alreadyFollowed =await FollowTables.findOne({
         where: {
             [Op.and]: [

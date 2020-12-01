@@ -22,6 +22,7 @@ router.post('/articles', authenticateToken , async function(req,res){
 })
 
 //To get Feed
+// same routes with :params are kept lower in the code // refer to get an article
 router.get('/articles/feed',authenticateToken ,async (req,res) =>{
  
   const limit = req.query.limit;
@@ -74,6 +75,7 @@ router.delete('/articles/:slug' , authenticateToken , async function(req,res){
   }
 })
 
+//update an article via email
 router.put('/articles/:slug' , authenticateToken , async function(req,res){
   if(req.user)
   {
@@ -91,6 +93,7 @@ router.put('/articles/:slug' , authenticateToken , async function(req,res){
 })
 
 //Get all articles
+//Passing query params with ?
 router.get('/articles',async (req,res) =>{
   const author = req.query.author;
   const limit = req.query.limit;
@@ -107,7 +110,6 @@ router.get('/articles',async (req,res) =>{
       }
     })
   }
-
 
 })
 

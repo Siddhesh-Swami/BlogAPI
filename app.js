@@ -4,13 +4,16 @@ require('dotenv').config()
 const express = require("express");
 const bodyParser = require('body-parser');
 const app = express();
+
+//used mysql2
 var mysql = require('mysql2');
 const {db} = require("./models/index");
 
 var server;
-// parse application/json
 // app.use(bodyParser.urlencoded({extended:true}))
 // app.use(bodyParser.json());
+
+// parse application/json
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -56,19 +59,12 @@ con.query('INSERT INTO `blog`.`usermodel` (`username`, `email`, `password`, `bio
   });
 */
 
-
-/*
-
-*/
-
-
 try {
   db.authenticate();
   console.log('Connection has been established successfully.');
 } catch (error) {
   console.error('Unable to connect to the database:', error);
 }
-
 
 db.sync()
   .then(() => {
@@ -79,12 +75,6 @@ db.sync()
   })
   .catch( function (err) {
     console.error(err)
-  })
-
-app.get("/", function(req,res){
-	res.send("Hello World");
-});
-
-  
+  })  
 
 // module.exports = con;
